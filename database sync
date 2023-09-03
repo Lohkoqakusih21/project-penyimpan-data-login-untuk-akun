@@ -1,0 +1,30 @@
+import sqlite3
+from hashlib import sha256
+
+# Fungsi untuk mendaftar pengguna
+def register(username, password):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    hashed_password = sha256(password.encode()).hexdigest()
+    cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+    conn.commit()
+    conn.close()
+
+# Fungsi untuk login pengguna
+def login(username, password):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    hashed_password = sha256(password.encode()).hexdigest()
+    cursor.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, hashed_password))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+if __name__ == '__main__':
+    # Contoh penggunaan
+    register('user1', 'password1')
+    result = login('user1', 'password1')
+    if result:
+        print('Login berhasil.')
+    else:
+        print('Login gagal.')
